@@ -52,7 +52,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="index.html" class="nav-link "><i class="fa fa-home nav-icon"></i>
+                            <a href="index.php" class="nav-link "><i class="fa fa-home nav-icon"></i>
                                 <p>Home</p>
                             </a>
                         </li>
@@ -67,6 +67,9 @@
                                 <i class="fa fa-user-secret nav-icon" style="font-size:24px"></i>
                                 <p>sentiment</p>
                             </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="sematicreport.php" class="nav-link"><i class="fa fa-file-text nav-icon" style="font-size:24px"></i><p> รายงาน</p></a>
                         </li>
                     </ul>
                 </nav>

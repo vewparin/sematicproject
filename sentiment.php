@@ -33,7 +33,7 @@
 <i class="fa fa-user-o nav-icon" style="font-size:24px;color:White"></i><p>User</p></a>
                         </li>
                         <li class="nav-item">
-                            <a href="index.html" class="nav-link "><i class="fa fa-home nav-icon"></i><p>Home</p></a>
+                            <a href="index.php" class="nav-link "><i class="fa fa-home nav-icon"></i><p>Home</p></a>
                         </li>
                         <li class="nav-item">
                             <a href="reviews.php" class="nav-link">
@@ -42,6 +42,9 @@
                         <li class="nav-item">
                             <a href="sentiment.php" class="nav-link active">
                                 <i class="fa fa-user-secret nav-icon" style="font-size:24px"></i><p>sentiment</p></a>
+                        </li>
+                          <li class="nav-item">
+                            <a href="sematicreport.php" class="nav-link"><i class="fa fa-file-text nav-icon" style="font-size:24px"></i><p> รายงาน</p></a>
                         </li>
                     </ul>
                 </nav>
