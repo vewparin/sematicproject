@@ -1,10 +1,13 @@
 <?php
- session_start();
-// if (isset($_SESSION['user_id'])) {
-//     echo '<p>Hello, ' . $_SESSION['user_name'] . '! <a href="logout.php">Logout</a></p>';
-// } else {
-//     echo '<p><a href="google-login.php">Login with Google</a></p>';
-// }
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    // ถ้าผู้ใช้ยังไม่ได้ล็อกอินด้วย Google ให้ Redirect ไปยัง google-login.php เพื่อล็อกอิน
+    header('Location: google-login.php');
+    exit();
+}
+
+// ต่อไปคือโค้ด HTML และอื่น ๆ ใน index.php
 ?>
 <!DOCTYPE html>
 <html>
@@ -50,7 +53,18 @@
                         <li class="nav-item mt-3">
                             <a class="nav-link elevation-2" style="color: #fff; background-color: rgba(255,255,255,.1)">
                                 <i class="fa fa-user-o nav-icon" style="font-size:24px;color:White"></i>
-                                <p>User</p>
+                                <?php
+                                // เช็คว่าผู้ใช้ล็อกอินหรือไม่
+                                if (isset($_SESSION['user_id'])) {
+                                    // แสดงชื่อผู้ใช้ที่ล็อกอินอยู่
+                                    echo '<p>' . $_SESSION['user_name'] . '</p>';
+                                    // เพิ่มปุ่ม logout
+                                    echo '<a href="logout.php"><i class="fa fa-sign-out nav-icon" style="font-size:24px;color:White"></i><p>Logout</p></a>';
+                                } else {
+                                    // ถ้ายังไม่ล็อกอิน ให้แสดงข้อความว่ายังไม่ล็อกอิน
+                                    echo '<p>User</p>';
+                                }
+                                ?>
                             </a>
                         </li>
                         <li class="nav-item">
