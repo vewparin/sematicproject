@@ -74,8 +74,9 @@ if ($result) {
                 continue; // Skip to the next iteration of the loop
             }
 
-            $label = $data['sentiment']['polarity'];
+            
             $sentiment = $data['sentiment']['score'];
+            $label = $data['sentiment']['polarity'];
 
             $keywords = isset($data['preprocess']['keyword']) ? implode(',', $data['preprocess']['keyword']) : '';
 
@@ -86,7 +87,7 @@ if ($result) {
             if (!$insert_result) {
                 echo "Error inserting sentiment data for review id $review_id: " . pg_last_error($dbconn);
             } else {
-                echo "Sentiment analysis successful for review id $review_id: Sentiment - $sentiment <br>";
+                echo "Sentiment analysis successful for review id $review_id: Sentiment - $sentiment <br> " ;
             }
         }
     }

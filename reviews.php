@@ -136,6 +136,11 @@
                                                         }
                                                         pg_free_result($result);
                                                         ?>
+                                                        <tr>
+                                                            <td colspan="6">
+                                                                <button id="allAnalyzeBtn" class="btn btn-primary">All Analyze</button>
+                                                            </td>
+                                                        </tr>
                                                     </table>
                                                 </div>
                                             </div>
@@ -156,6 +161,7 @@
     <script src="./Content/plugins/bootstrap/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js"></script>
     <script src="./Content/dist/js/adminlte.min.js"></script>
+    <script src="allAnalyze.js"></script>
 </body>
 
 </html>
