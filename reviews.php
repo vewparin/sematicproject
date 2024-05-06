@@ -12,17 +12,18 @@
     <link href="./Content/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
-           .btn-circle {
-        border-radius: 50%;
-    }
+        .btn-circle {
+            border-radius: 50%;
+        }
 
-    .btn-hover:hover {
-        background-color: red; /* เปลี่ยนสีพื้นหลังเมื่อเมาส์โฮเวอร์ */
-        color: white; /* เปลี่ยนสีตัวอักษรเป็นสีขาวเมื่อเมาส์โฮเวอร์ */
-    }
-    .btn-danger{
-    
-    }
+        .btn-hover:hover {
+            background-color: red;
+            /* เปลี่ยนสีพื้นหลังเมื่อเมาส์โฮเวอร์ */
+            color: white;
+            /* เปลี่ยนสีตัวอักษรเป็นสีขาวเมื่อเมาส์โฮเวอร์ */
+        }
+
+        .btn-danger {}
     </style>
 </head>
 
@@ -69,7 +70,9 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="sematicreport.php" class="nav-link"><i class="fa fa-file-text nav-icon" style="font-size:24px"></i><p> รายงาน</p></a>
+                            <a href="sematicreport.php" class="nav-link"><i class="fa fa-file-text nav-icon" style="font-size:24px"></i>
+                                <p> รายงาน</p>
+                            </a>
                         </li>
                     </ul>
                 </nav>
@@ -94,13 +97,14 @@
                                 <div class="col-md-12">
                                     <div class="row">
                                         <div class="tab-content">
+
                                             <div id="InstEng" class="active tab-pane" style="padding-top: 1%">
                                                 <?php
                                                 include 'database.php';
-                                                $query = 'select * from reviews1';
+                                                $query = 'SELECT * FROM reviews1';
                                                 $result = pg_query($query);
-                                                $i = 0; ?>
-                                                <div class="table-responsive ">
+                                                ?>
+                                                <div class="table-responsive">
                                                     <table class="table table-hover table-condensed">
                                                         <tr>
                                                             <th>ID</th>
@@ -108,40 +112,35 @@
                                                             <th>Comment</th>
                                                             <th>Created Date</th>
                                                             <th>Button</th>
-                                                            <?php echo '</tr>';
-                                                            $i = 0;
-                                                            while ($row = pg_fetch_row($result)) {
-                                                                echo '<tr>';
-                                                                $count = count($row);
-                                                                $y = 0;
-                                                                $name1 = $row[0];
-                                                                while ($y < $count) {
-                                                                    $c_row = current($row);
-                                                                    echo '<td>' . $c_row . '</td>';
-                                                                    next($row);
-                                                                    $y = $y + 1;
-                                                                } ?>
-
-                                                                <td>
-                                                                    <form action="sent.php">
-                                                                        <input type="hidden" name="index" value="<?php echo $name1 ?>">
-                                                                        <input type="submit" name="name" value="Analyze">
-                                                                    </form>
-                                                                </td>
-                                                                <td>
-                                                                    <form action="delete.php" method="post" class="deletebtn">
-                                                                        <input type="hidden" name="id" value="<?php echo $name1 ?>">
-                                                                        <button type="submit" class="btn btn-danger btn-circle  btn-hover"><i class="fa fa-trash"></i> </button>
-                                                                    </form>
-                                                                </td>
-                                                            <?php
-                                                                echo '</tr>';
-                                                                $i = $i + 1;
+                                                            <th>Delete</th>
+                                                        </tr>
+                                                        <?php
+                                                        while ($row = pg_fetch_row($result)) {
+                                                            echo '<tr>';
+                                                            foreach ($row as $cell) {
+                                                                echo '<td>' . $cell . '</td>';
                                                             }
-                                                            pg_free_result($result);
-                                                            echo '</table></body></html>'; ?>
+                                                            echo '<td>
+                    <form action="sent.php" method="POST">
+                        <input type="hidden" name="index" value="' . $row[0] . '">
+                        <input type="submit" name="name" value="Analyze">
+                    </form>
+                </td>';
+                                                            echo '<td>
+                    <form action="delete.php" method="post" class="deletebtn">
+                        <input type="hidden" name="id" value="' . $row[0] . '">
+                        <button type="submit" class="btn btn-danger btn-circle btn-hover"><i class="fa fa-trash"></i> </button>
+                    </form>
+                </td>';
+                                                            echo '</tr>';
+                                                        }
+                                                        pg_free_result($result);
+                                                        ?>
+                                                    </table>
                                                 </div>
                                             </div>
+
+
                                         </div>
                                     </div>
                                 </div>

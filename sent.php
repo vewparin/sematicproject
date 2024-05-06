@@ -1,79 +1,73 @@
 <?php
-      $KeywordString=' ';
-      $label;
-      $score;
-class User
-{       
-    public $KeywordString=' shubham';
-    public function analyze($id)
-    {
-        include 'database.php';
-        $query = "select * from reviews1 where id='".$GLOBALS['id']."';";
-        $r = pg_query($query);
-        $row = pg_fetch_row($r);
-        $this->analyzeSentiment($row);
-        $this->analyzeKeyword($row);
-    }
+require 'database.php';
 
-    public function analyzeSentiment($row){
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://gateway-lon.watsonplatform.net/natural-language-understanding/api/v1/analyze?version=2018-09-21');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, "{\n  \"text\": \"$row[2]; \",\n  \"features\": {\n    \"sentiment\": {}\n  }\n}");
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_USERPWD, 'apikey' . ':' . 'NC5pFvhPQ1L0GnPXzcEhbtsc4FjJEQxBMvX8ZrQNY86A');
-        $headers = array();
-        $headers[] = 'Content-Type: application/json';
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        $result = curl_exec($ch);
-        if (curl_errno($ch)) { echo 'Error:' . curl_error($ch); }
-        $value=json_decode( $result, true );
-        $GLOBALS['score']= $value['sentiment']['document']['score'];
-        $GLOBALS['label']=$value['sentiment']['document']['label'];
-        curl_close ($ch);                
-    }
-    public function analyzeKeyword($row){
-                   $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'https://gateway-lon.watsonplatform.net/natural-language-understanding/api/v1/analyze?version=2018-09-21');
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, "{\n  \"text\": \" $row[2]\",\n  \"features\": {\n    \"keywords\": {}\n  }\n}");
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_USERPWD, 'apikey' . ':' . 'NC5pFvhPQ1L0GnPXzcEhbtsc4FjJEQxBMvX8ZrQNY86A');
-            $headers = array();
-            $headers[] = 'Content-Type: application/json';
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            $keywordResult = curl_exec($ch);
-            if (curl_errno($ch)) {
-               echo 'Error:' . curl_error($ch);
-            }
-        $keywordValue=json_decode( $keywordResult, true );
-        $keywrd1= $keywordValue['keywords'];
+// Check if form is submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Check if index is set
+    if (isset($_POST['index'])) {
+        // Retrieve review ID from the form
+        $review_id = $_POST['index'];
 
-        foreach ($keywrd1 as $i => $value) {
-                  $keywrd = $keywrd1[$i]['text'];
-                  $GLOBALS['KeywordString'].=$keywrd.', ';
+        // Query the review based on ID
+        $query = "SELECT * FROM public.reviews1 WHERE id = $review_id";
+        $result = pg_query($dbconn, $query);
+        if ($result) {
+            // Fetch the comment
+            $row = pg_fetch_assoc($result);
+            $comment = $row['comment'];
+
+            // Call sentiment analysis API
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => "https://api.aiforthai.in.th/ssense",
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "POST",
+                CURLOPT_POSTFIELDS => "text=" . urlencode($comment),
+                CURLOPT_HTTPHEADER => array(
+                    "Content-Type: application/x-www-form-urlencoded",
+                    "Apikey: msRgjUVGv57iCExJT034HWVMWh0zC1g3"
+                )
+            ));
+
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
+
+            if ($err) {
+                echo "cURL Error #:" . $err;
+            } else {
+                $data = json_decode($response, true);
+                if (isset($data['error'])) {
+                    echo "Error from API: " . $data['error'];
+                } else {
+                    // Determine sentiment
+                    $label = $data['sentiment']['polarity'];
+                    $sentiment = $data['sentiment']['score'];
+                    // Extract keywords
+                    $keywords = isset($data['preprocess']['keyword']) ? implode(',', $data['preprocess']['keyword']) : '';
+
+                    // Check if sentiment score is 0, then set label to "neutral"
+                    if ($sentiment == 0) {
+                        $label = "neutral";
+                    }
+                    // Insert sentiment data into sentiments table
+                    $insert_query = "INSERT INTO public.sentiments (review_id, sentiment ,label, keywords, created_on) VALUES ($review_id, $sentiment,'$label', '$keywords', NOW())";
+                    $insert_result = pg_query($dbconn, $insert_query);
+                    if (!$insert_result) {
+                        echo "Error inserting sentiment data for review id $review_id: " . pg_last_error($dbconn);
+                    } else {
+                        // Redirect back to the original page with a success message
+                        header('Location: sentiment.php?success=true');
+                        exit();
+                    }
                 }
-            curl_close ($ch);       
+            }
+        } else {
+            echo "Error executing query: " . pg_last_error($dbconn);
         }
-
-        public function database($score,$label,$KeywordString,$id){
-                  $t=time();
-      $timeStamp=date("Y-m-d",$t);
-    $query = "insert into sentiments(review_id, sentiment, label, keywords, created_on) values('".$id."','".$score."','".$label."','".$KeywordString."','".$timeStamp."');";
-              $r = pg_query($query);
-        }
+    }
 }
-
-$users = new User;
-if(isset($_GET["index"]))
-{   
-    $id = intval($_GET['index']);
-    $users->analyze($id);
-    echo "$KeywordString";
-    echo "$score";
-    echo "$label";
-    echo "$id";
-    $users->database($score,$label,$KeywordString,$id);
-}
-
-header("Location:http://localhost/websematic/sentiment.php");?>
