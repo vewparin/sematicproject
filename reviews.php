@@ -89,6 +89,8 @@
                     <div class="col-md-12 mt-5">
                         <div class="card card-info card-outline elevation-2">
                             <div class="card-header">
+
+                            
                                 <ul class="nav nav-pills">
                                     <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#InstEng"><small style="font-size: medium; font-weight: 600">Review To Analyze Sentiment</small></a></li>
                                 </ul>
@@ -108,7 +110,6 @@
                                                     <table class="table table-hover table-condensed">
                                                         <tr>
                                                             <th>ID</th>
-                                                            <th>Review Entity Type Id</th>
                                                             <th>Comment</th>
                                                             <th>Created Date</th>
                                                             <th>Button</th>
@@ -117,8 +118,11 @@
                                                         <?php
                                                         while ($row = pg_fetch_row($result)) {
                                                             echo '<tr>';
-                                                            foreach ($row as $cell) {
-                                                                echo '<td>' . $cell . '</td>';
+                                                            for ($i = 0; $i < count($row); $i++) {
+                                                                // ไม่แสดง Review Entity Type Id (index 1)
+                                                                if ($i != 1) {
+                                                                    echo '<td>' . $row[$i] . '</td>';
+                                                                }
                                                             }
                                                             echo '<td>
                     <form action="sent.php" method="POST">
@@ -137,7 +141,7 @@
                                                         pg_free_result($result);
                                                         ?>
                                                         <tr>
-                                                            <td colspan="6">
+                                                            <td colspan="5">
                                                                 <button id="allAnalyzeBtn" class="btn btn-primary">All Analyze</button>
                                                             </td>
                                                         </tr>
