@@ -47,6 +47,28 @@ $data = [
 $teacher = "ดร.สมชาย อาจารย์ดี";
 $subject = "การวิเคราะห์ข้อมูล";
 $semester = "ภาคการศึกษาที่ 1/2566";
+
+// Function to fetch comments based on sentiment
+function fetchCommentsBySentiment($sentiment)
+{
+    include 'database.php'; // Ensure you have database connection included
+    $query = "SELECT comment FROM reviews1 
+              JOIN sentiments ON reviews1.id = sentiments.review_id 
+              WHERE sentiments.label = '$sentiment'";
+    $result = pg_query($query);
+
+    $comments = [];
+    while ($row = pg_fetch_assoc($result)) {
+        $comments[] = $row['comment'];
+    }
+    pg_free_result($result);
+    return $comments;
+}
+
+// Fetch comments for each sentiment
+$positiveComments = fetchCommentsBySentiment('positive');
+$neutralComments = fetchCommentsBySentiment('neutral');
+$negativeComments = fetchCommentsBySentiment('negative');
 ?>
 
 <!DOCTYPE html>
@@ -161,12 +183,15 @@ $semester = "ภาคการศึกษาที่ 1/2566";
                                         <div class="row">
                                             <div class="col-md-4">
                                                 <h5>บวก (Positive): <?php echo $sentimentCounts['positive']; ?> ครั้ง</h5>
+                                                <button class="btn btn-success" onclick="showComments('positive')">ดูคอมเมนต์</button>
                                             </div>
                                             <div class="col-md-4">
                                                 <h5>กลาง (Neutral): <?php echo $sentimentCounts['neutral']; ?> ครั้ง</h5>
+                                                <button class="btn btn-warning" onclick="showComments('neutral')">ดูคอมเมนต์</button>
                                             </div>
                                             <div class="col-md-4">
                                                 <h5>ลบ (Negative): <?php echo $sentimentCounts['negative']; ?> ครั้ง</h5>
+                                                <button class="btn btn-danger" onclick="showComments('negative')">ดูคอมเมนต์</button>
                                             </div>
                                         </div>
                                         <div class="row mt-4">
@@ -218,6 +243,26 @@ $semester = "ภาคการศึกษาที่ 1/2566";
                                                 </table>
                                             </div>
                                         </div>
+
+                                        <!-- Modal Structure -->
+                                        <div class="modal fade" id="commentsModal" tabindex="-1" role="dialog" aria-labelledby="commentsModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="commentsModalLabel">Comments</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <ul id="commentsList" class="list-group">
+                                                            <!-- Comments will be appended here -->
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -249,6 +294,46 @@ $semester = "ภาคการศึกษาที่ 1/2566";
                 }
             }
         });
+
+        // JavaScript function to show comments in the modal
+        function showComments(sentiment) {
+            var comments = [];
+            var modalTitle = '';
+
+            // Fetch the comments based on sentiment
+            switch (sentiment) {
+                case 'positive':
+                    comments = <?php echo json_encode($positiveComments); ?>;
+                    modalTitle = 'บวก (Positive) Comments';
+                    break;
+                case 'neutral':
+                    comments = <?php echo json_encode($neutralComments); ?>;
+                    modalTitle = 'กลาง (Neutral) Comments';
+                    break;
+                case 'negative':
+                    comments = <?php echo json_encode($negativeComments); ?>;
+                    modalTitle = 'ลบ (Negative) Comments';
+                    break;
+            }
+
+            // Set the modal title
+            document.getElementById('commentsModalLabel').textContent = modalTitle;
+
+            // Clear previous comments
+            var commentsList = document.getElementById('commentsList');
+            commentsList.innerHTML = '';
+
+            // Append new comments
+            comments.forEach(function(comment) {
+                var li = document.createElement('li');
+                li.textContent = comment;
+                li.className = 'list-group-item';
+                commentsList.appendChild(li);
+            });
+
+            // Show the modal
+            $('#commentsModal').modal('show');
+        }
     </script>
     <script src="./Content/plugins/jquery/jquery.min.js"></script>
     <script src="./Content/plugins/bootstrap/js/bootstrap.min.js"></script>
