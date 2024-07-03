@@ -111,6 +111,19 @@ $negativeComments = fetchCommentsBySentiment('negative');
             width: 60%;
             margin: auto;
         }
+        .logout-button {
+            margin: 10px;
+            background-color: #CD5C5C;
+            border-radius: 40px;
+            color: white;
+            font-size: 14px;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .logout-button:hover{
+            background-color: #515151;
+        }
     </style>
 </head>
 
@@ -132,12 +145,23 @@ $negativeComments = fetchCommentsBySentiment('negative');
             <div class="sidebar">
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                        <li class="nav-item mt-3">
-                            <a class="nav-link elevation-2" style="color: #fff; background-color: rgba(255,255,255,.1)">
-                                <i class="fa fa-user-o nav-icon" style="font-size:24px;color:White"></i>
-                                <p>User</p>
-                            </a>
-                        </li>
+                        <div class="logoutcontainer">
+                            <div class="insidelogout">
+                                <li class="nav-item mt-3">
+                                    <a class="nav-link elevation-2" style="color: #fff;">
+                                        <i class="fa fa-user-o nav-icon" style="font-size:24px; color:white;"></i>
+                                        <?php
+                                        if (isset($_SESSION['user_id'])) {
+                                            echo '<span class="user-info">' . $_SESSION['user_name'];
+                                            echo '<a href="logout.php"><button class="logout-button">Logout</button></a></span>';
+                                        } else {
+                                            echo '<p>User</p>';
+                                        }
+                                        ?>
+                                    </a>
+                                </li>
+                            </div>
+                        </div>
                         <li class="nav-item">
                             <a href="index.php" class="nav-link"><i class="fa fa-home nav-icon"></i>
                                 <p>Home</p>
@@ -158,6 +182,11 @@ $negativeComments = fetchCommentsBySentiment('negative');
                         <li class="nav-item">
                             <a href="sematicreport.php" class="nav-link active"><i class="fa fa-file-text nav-icon" style="font-size:24px"></i>
                                 <p>รายงาน</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="analyzebytrain.php" class="nav-link "><i class="fa fa-file-text nav-icon" style="font-size:24px"></i>
+                                <p> sentimentByTrain</p>
                             </a>
                         </li>
                     </ul>
@@ -182,9 +211,9 @@ $negativeComments = fetchCommentsBySentiment('negative');
                                 <div class="card-body">
                                     <div class="text-center">
                                         <h3 class="mb-4">รายงานการวิเคราะห์ความรู้สึก</h3>
-                                        <p><strong>อาจารย์ผู้สอน:</strong> <?php echo $teacher; ?></p>
+                                        <!-- <p><strong>อาจารย์ผู้สอน:</strong> <?php echo $teacher; ?></p>
                                         <p><strong>วิชา:</strong> <?php echo $subject; ?></p>
-                                        <p><strong>ภาคปีการศึกษา:</strong> <?php echo $semester; ?></p>
+                                        <p><strong>ภาคปีการศึกษา:</strong> <?php echo $semester; ?></p> -->
                                         <div class="row">
                                             <div class="col-md-4">
                                                 <h5>บวก (Positive): <?php echo $sentimentCounts['positive']; ?> ครั้ง</h5>

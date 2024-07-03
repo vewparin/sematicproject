@@ -21,6 +21,22 @@ if (!isset($_SESSION['user_id'])) {
     <link rel="stylesheet" href="./Content/dist/css/adminlte.min.css">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <link href="./Content/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+             .logout-button {
+            margin: 10px;
+            background-color: #CD5C5C;
+            border-radius: 40px;
+            color: white;
+            font-size: 14px;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .logout-button:hover{
+            background-color: #515151;
+        }
+    </style>
 </head>
 
 <body class="hold-transition sidebar-mini">
@@ -42,12 +58,23 @@ if (!isset($_SESSION['user_id'])) {
                 <!-- Sidebar Menu -->
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                        <li class="nav-item mt-3">
-                            <a class="nav-link elevation-2" style="color: #fff; background-color: rgba(255,255,255,.1)">
-                                <i class="fa fa-user-o nav-icon" style="font-size:24px;color:White"></i>
-                                <p>User</p>
-                            </a>
-                        </li>
+                        <div class="logoutcontainer">
+                            <div class="insidelogout">
+                                <li class="nav-item mt-3">
+                                    <a class="nav-link elevation-2" style="color: #fff;">
+                                        <i class="fa fa-user-o nav-icon" style="font-size:24px; color:white;"></i>
+                                        <?php
+                                        if (isset($_SESSION['user_id'])) {
+                                            echo '<span class="user-info">' . $_SESSION['user_name'];
+                                            echo '<a href="logout.php"><button class="logout-button">Logout</button></a></span>';
+                                        } else {
+                                            echo '<p>User</p>';
+                                        }
+                                        ?>
+                                    </a>
+                                </li>
+                            </div>
+                        </div>
                         <li class="nav-item">
                             <a href="index.php" class="nav-link "><i class="fa fa-home nav-icon"></i>
                                 <p>Home</p>
@@ -68,6 +95,11 @@ if (!isset($_SESSION['user_id'])) {
                         <li class="nav-item">
                             <a href="sematicreport.php" class="nav-link"><i class="fa fa-file-text nav-icon" style="font-size:24px"></i>
                                 <p> รายงาน</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="analyzebytrain.php" class="nav-link "><i class="fa fa-file-text nav-icon" style="font-size:24px"></i>
+                                <p> sentimentByTrain</p>
                             </a>
                         </li>
                     </ul>
