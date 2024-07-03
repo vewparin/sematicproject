@@ -102,7 +102,7 @@ if (!isset($_SESSION['user_id'])) {
                         <div class="card card-info card-outline elevation-2">
                             <div class="card-header">
 
-                            
+
                                 <ul class="nav nav-pills">
                                     <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#InstEng"><small style="font-size: medium; font-weight: 600">Review To Analyze Sentiment</small></a></li>
                                 </ul>
@@ -152,12 +152,18 @@ if (!isset($_SESSION['user_id'])) {
                                                         }
                                                         pg_free_result($result);
                                                         ?>
-                                                        <tr>
-                                                            <td colspan="5">
-                                                                <button id="allAnalyzeBtn" class="btn btn-primary">All Analyze</button>
-                                                            </td>
-                                                        </tr>
+
                                                     </table>
+                                                    <tr>
+                                                        <td colspan="5" style="display: flex; gap: 10px;">
+                                                            <button id="allAnalyzeBtn" class="btn btn-primary" style="margin-bottom: 5px;">All Analyze With AI ForThai</button>
+                                                            <form action="predict.php" method="post" style="margin-right: 10px;">
+                                                                <button type="submit" class="btn btn-primary" style="margin-bottom: 5px;">Analyze All Comments With TrainModel</button>
+                                                            </form>
+                                                            <a href="analyzebytrain.php" class="btn btn-success" style="margin-bottom: 5px;">View Analyzed Comments</a>
+                                                        </td>
+                                                    </tr>
+
                                                 </div>
                                             </div>
 

@@ -38,14 +38,15 @@
 //     echo "ไม่สามารถอ่านค่า prediction ได้";
 // }
 
-include 'database.php';
+
+include 'database.php'; // Include the database connection
 
 // Fetch all comments
 $query = "SELECT id, comment FROM public.reviews1";
-$result = pg_query($dbconn, $query);
+$comments_result = pg_query($dbconn, $query);
 
-if ($result) {
-    while ($row = pg_fetch_assoc($result)) {
+if ($comments_result) {
+    while ($row = pg_fetch_assoc($comments_result)) {
         $review_id = $row['id'];
         $comment = $row['comment'];
 
@@ -62,12 +63,12 @@ if ($result) {
             'Content-Length: ' . strlen($data))
         );
 
-        $result = curl_exec($ch);
+        $api_result = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         if ($http_code == 200) {
-            $response = json_decode($result, true);
+            $response = json_decode($api_result, true);
             if (isset($response['prediction'])) {
                 $label = $response['prediction'];
 
@@ -79,17 +80,18 @@ if ($result) {
                     echo "Insert failed: " . pg_last_error($dbconn);
                 }
             }
+        } else {
+            echo "API request failed with status code: $http_code";
         }
     }
 
-    pg_free_result($result);
+    pg_free_result($comments_result);
 } else {
     echo "Failed to fetch comments: " . pg_last_error($dbconn);
 }
 
+// Redirect to the results page
 header("Location: analyzebytrain.php");
-
-
-
+exit; // Ensure the script stops after redirection
 
 ?>

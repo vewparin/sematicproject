@@ -27,10 +27,10 @@ include 'database.php'; // Include the database connection
                 // Ensure $dbconn is defined from database.php
                 if ($dbconn) {
                     $query = "SELECT * FROM public.analyzed_comments ORDER BY created_on DESC";
-                    $result = pg_query($dbconn, $query);
+                    $comments_result = pg_query($dbconn, $query);
 
-                    if ($result) {
-                        while ($row = pg_fetch_assoc($result)) {
+                    if ($comments_result) {
+                        while ($row = pg_fetch_assoc($comments_result)) {
                             echo "<tr>";
                             echo "<td>" . htmlspecialchars($row['id']) . "</td>";
                             echo "<td>" . htmlspecialchars($row['review_id']) . "</td>";
@@ -38,7 +38,7 @@ include 'database.php'; // Include the database connection
                             echo "<td>" . htmlspecialchars($row['created_on']) . "</td>";
                             echo "</tr>";
                         }
-                        pg_free_result($result);
+                        pg_free_result($comments_result);
                     } else {
                         echo "Query failed: " . pg_last_error($dbconn);
                     }
