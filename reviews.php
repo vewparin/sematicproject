@@ -36,6 +36,7 @@ if (!isset($_SESSION['user_id'])) {
         }
 
         .btn-danger {}
+
         .logout-button {
             margin: 10px;
             background-color: #CD5C5C;
@@ -46,7 +47,8 @@ if (!isset($_SESSION['user_id'])) {
             padding: 5px 10px;
             cursor: pointer;
         }
-        .logout-button:hover{
+
+        .logout-button:hover {
             background-color: #515151;
         }
     </style>
@@ -141,7 +143,9 @@ if (!isset($_SESSION['user_id'])) {
                                 <div class="col-md-12">
                                     <div class="row">
                                         <div class="tab-content">
-
+                                            <div class="text-center">
+                                                <button class="btn btn-danger btn-sm delete-all-btn"><i class="fa fa-trash"></i> Delete All</button>
+                                            </div>
                                             <div id="InstEng" class="active tab-pane" style="padding-top: 1%">
                                                 <?php
                                                 include 'database.php';
@@ -214,6 +218,53 @@ if (!isset($_SESSION['user_id'])) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js"></script>
     <script src="./Content/dist/js/adminlte.min.js"></script>
     <script src="allAnalyze.js"></script>
+    <script>
+        // JavaScript function to handle delete button click
+        $(document).ready(function() {
+            $('.delete-btn').click(function() {
+                var button = $(this);
+                if (confirm('คุณแน่ใจหรือไม่ที่ต้องการลบรายการนี้?')) {
+                    var sentimentId = button.data('id'); // Get the ID of the sentiment to delete
+                    $.ajax({
+                        url: 'delete_sentiment.php',
+                        type: 'POST',
+                        data: {
+                            id: sentimentId
+                        },
+                        success: function(response) {
+                            alert(response); // Display success or error message
+                            // Remove the deleted row from the table
+                            button.closest('tr').remove();
+                        },
+                        error: function(xhr, status, error) {
+                            alert('เกิดข้อผิดพลาดในการลบรายการ');
+                        }
+                    });
+                }
+            });
+        });
+        // JavaScript function to handle delete all button click
+        $(document).ready(function() {
+            $('.delete-all-btn').click(function() {
+                if (confirm('คุณแน่ใจหรือไม่ที่ต้องการลบข้อมูลทั้งหมด?')) {
+                    $.ajax({
+                        url: 'delete_all_review_comments.php',
+                        type: 'POST',
+                        success: function(response) {
+                            // Handle success response here
+                            alert('ลบข้อมูลทั้งหมดสำเร็จ');
+                            // Remove all rows from the table
+                            $('table tbody tr').not(':first').remove();
+                        },
+                        error: function(xhr, status, error) {
+                            // Handle error response here
+                            alert('เกิดข้อผิดพลาดในการลบข้อมูล');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
