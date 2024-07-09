@@ -237,9 +237,10 @@ if (!isset($_SESSION['user_id'])) {
                                                         ?>
 
                                                     </table>
+                                                </div>
 
-
-
+                                                <div id="estimatedTimeContainer" style="margin-top: 20px;">
+                                                    Estimated processing time: <span id="estimatedTime"></span> minutes
                                                 </div>
                                             </div>
 
@@ -420,56 +421,126 @@ if (!isset($_SESSION['user_id'])) {
         //         }
         //     });
         // });
-        
-            $(document).ready(function() {
-                $('#allAnalyzeBtn').click(function() {
-                    var confirmMessage = 'Are you sure you want to analyze all reviews with AI ForThai?\n\nPress OK to proceed, or Cancel to abort.';
-                    if (confirm(confirmMessage)) {
-                        var reviewIds = [];
-                        $('table tr').each(function() {
-                            var id = $(this).find('td:first').text().trim();
-                            if (id !== 'ID' && id !== '') {
-                                reviewIds.push(id);
-                            }
-                        });
+        //==========================================================================================================
+        // $(document).ready(function() {
+        //     $('#allAnalyzeBtn').click(function() {
+        //         var confirmMessage = 'Are you sure you want to analyze all reviews with AI ForThai?\n\nPress OK to proceed, or Cancel to abort.';
+        //         if (confirm(confirmMessage)) {
+        //             var reviewIds = [];
+        //             $('table tr').each(function() {
+        //                 var id = $(this).find('td:first').text().trim();
+        //                 if (id !== 'ID' && id !== '') {
+        //                     reviewIds.push(id);
+        //                 }
+        //             });
 
-                        if (reviewIds.length > 0) {
-                            $.ajax({
-                                url: 'processAllAnalyze.php',
-                                type: 'POST',
-                                data: {
-                                    reviewIds: reviewIds
-                                },
-                                beforeSend: function() {
-                                    // Show a loading indicator or message here
-                                    alert('Please wait while processing...');
-                                },
-                                success: function(response) {
-                                    // Parse the JSON response
-                                    var jsonResponse = JSON.parse(response);
+        //             if (reviewIds.length > 0) {
+        //                 $.ajax({
+        //                     url: 'processAllAnalyze.php',
+        //                     type: 'POST',
+        //                     data: {
+        //                         reviewIds: reviewIds
+        //                     },
+        //                     beforeSend: function() {
+        //                         // Show a loading indicator or message here
+        //                         alert('Please wait while processing...');
+        //                     },
+        //                     success: function(response) {
+        //                         // Parse the JSON response
+        //                         var jsonResponse = JSON.parse(response);
 
-                                    // Extract the processing time from the JSON response
-                                    var processingTime = jsonResponse.processing_time;
+        //                         // Extract the processing time from the JSON response
+        //                         var processingTime = jsonResponse.processing_time;
 
-                                    // Alert the processing time
-                                    alert('Processing complete. Time taken: ' + processingTime + ' seconds.');
+        //                         // Alert the processing time
+        //                         alert('Processing complete. Time taken: ' + processingTime + ' seconds.');
 
-                                    // Redirect to sentiment.php after processing
-                                    window.location.href = 'sentiment.php';
-                                },
-                                error: function(xhr, status, error) {
-                                    alert('Error: ' + error);
-                                }
-                            });
-                        } else {
-                            alert('No review IDs found to process.');
-                        }
-                    } else {
-                        alert('Operation cancelled.');
+        //                         // Redirect to sentiment.php after processing
+        //                         window.location.href = 'sentiment.php';
+        //                     },
+        //                     error: function(xhr, status, error) {
+        //                         alert('Error: ' + error);
+        //                     }
+        //                 });
+        //             } else {
+        //                 alert('No review IDs found to process.');
+        //             }
+        //         } else {
+        //             alert('Operation cancelled.');
+        //         }
+        //     });
+        // });
+        //===================================================================================
+        $(document).ready(function() {
+            function calculateEstimatedTime(reviewCount) {
+                const averageTimePerReview = 0.5 / 60; // สมมติว่าใช้เวลา 0.5 วินาทีต่อรีวิว
+                const estimatedTime = reviewCount * averageTimePerReview;
+                return estimatedTime.toFixed(2); // แสดงทศนิยมสองตำแหน่ง
+            }
+
+            function updateEstimatedTime() {
+                var reviewCount = 0;
+                $('table tr').each(function() {
+                    var id = $(this).find('td:first').text().trim();
+                    if (id !== 'ID' && id !== '') {
+                        reviewCount++;
                     }
                 });
-            });
 
+                var estimatedTime = calculateEstimatedTime(reviewCount);
+                $('#estimatedTime').text(estimatedTime);
+            }
+
+            // เรียกใช้ฟังก์ชัน updateEstimatedTime เมื่อโหลดหน้าเว็บ
+            updateEstimatedTime();
+
+            $('#allAnalyzeBtn').click(function() {
+                var confirmMessage = 'Are you sure you want to analyze all reviews with AI ForThai?\n\nPress OK to proceed, or Cancel to abort.';
+                if (confirm(confirmMessage)) {
+                    var reviewIds = [];
+                    $('table tr').each(function() {
+                        var id = $(this).find('td:first').text().trim();
+                        if (id !== 'ID' && id !== '') {
+                            reviewIds.push(id);
+                        }
+                    });
+
+                    if (reviewIds.length > 0) {
+                        $.ajax({
+                            url: 'processAllAnalyze.php',
+                            type: 'POST',
+                            data: {
+                                reviewIds: reviewIds
+                            },
+                            beforeSend: function() {
+                                // Show a loading indicator or message here
+                                alert('Please wait while processing...');
+                            },
+                            success: function(response) {
+                                // Parse the JSON response
+                                var jsonResponse = JSON.parse(response);
+
+                                // Extract the processing time from the JSON response
+                                var processingTime = jsonResponse.processing_time;
+
+                                // Alert the processing time
+                                alert('Processing complete. Time taken: ' + processingTime + ' seconds.');
+
+                                // Redirect to sentiment.php after processing
+                                window.location.href = 'sentiment.php';
+                            },
+                            error: function(xhr, status, error) {
+                                alert('Error: ' + error);
+                            }
+                        });
+                    } else {
+                        alert('No review IDs found to process.');
+                    }
+                } else {
+                    alert('Operation cancelled.');
+                }
+            });
+        });
     </script>
 </body>
 
