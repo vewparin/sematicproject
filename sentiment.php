@@ -29,6 +29,11 @@ if (!isset($_SESSION['user_id'])) {
             word-wrap: break-word;
             white-space: normal;
         }
+
+        .table-responsive {
+            max-height: 400px;
+            overflow-y: auto;
+        }
     </style>
 </head>
 

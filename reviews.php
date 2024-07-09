@@ -81,6 +81,10 @@ if (!isset($_SESSION['user_id'])) {
         .table th {
             font-size: 12px;
         }
+        .table-responsive {
+        height: 400px;
+        overflow: auto;
+    }
     </style>
 </head>
 
@@ -176,6 +180,15 @@ if (!isset($_SESSION['user_id'])) {
                                     <div class="row">
                                         <div class="tab-content">
                                             <div class="text-center">
+                                                <tr>
+                                                    <td colspan="5" style="display: flex; gap: 10px;">
+                                                        <button id="allAnalyzeBtn" class="btn btn-primary" style="margin-bottom: 5px;">All Analyze With AI ForThai</button>
+                                                        <form action="predict.php" method="post" style="margin-right: 10px;">
+                                                            <button type="submit" class="btn btn-success" style="margin-bottom: 5px;">Analyze All Comments With TrainModel</button>
+                                                        </form>
+                                                        <!-- <a href="analyzebytrain.php" class="btn btn-success" style="margin-bottom: 5px;">View Analyzed Comments</a> -->
+                                                    </td>
+                                                </tr>
                                                 <button class="btn btn-danger btn-sm delete-all-btn"><i class="fa fa-trash"></i> Delete All</button>
                                             </div>
                                             <div id="InstEng" class="active tab-pane" style="padding-top: 1%">
@@ -220,15 +233,7 @@ if (!isset($_SESSION['user_id'])) {
                                                         ?>
 
                                                     </table>
-                                                    <tr>
-                                                        <td colspan="5" style="display: flex; gap: 10px;">
-                                                            <button id="allAnalyzeBtn" class="btn btn-primary" style="margin-bottom: 5px;">All Analyze With AI ForThai</button>
-                                                            <form action="predict.php" method="post" style="margin-right: 10px;">
-                                                                <button type="submit" class="btn btn-success" style="margin-bottom: 5px;">Analyze All Comments With TrainModel</button>
-                                                            </form>
-                                                            <!-- <a href="analyzebytrain.php" class="btn btn-success" style="margin-bottom: 5px;">View Analyzed Comments</a> -->
-                                                        </td>
-                                                    </tr>
+
 
 
                                                 </div>
@@ -298,7 +303,7 @@ if (!isset($_SESSION['user_id'])) {
             });
         });
     </script>
-    
+
     <script>
         $(document).ready(function() {
             $('#allAnalyzeBtn').click(function() {
