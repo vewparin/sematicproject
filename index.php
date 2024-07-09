@@ -21,6 +21,7 @@ if (!isset($_SESSION['user_id'])) {
             padding: 25px;
             margin: 25px 150px;
         }
+
         .logout-button {
             margin: 10px;
             background-color: #CD5C5C;
@@ -31,8 +32,60 @@ if (!isset($_SESSION['user_id'])) {
             padding: 5px 10px;
             cursor: pointer;
         }
-        .logout-button:hover{
+
+        .logout-button:hover {
             background-color: #515151;
+        }
+
+        #box {
+            width: 100%;
+            max-width: 100%;
+            /* ขอบเขตความกว้างสูงสุด */
+            margin: 25px auto;
+            margin-left: 75%;
+            /* ปรับให้ box อยู่ตรงกลาง */
+            padding: 25px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            /* สีพื้นหลัง */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            /* เงา */
+        }
+
+        .custom-file-input::before {
+            content: 'Browse';
+            display: inline-block;
+            background: #007bff;
+            color: white;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            padding: 8px 12px;
+            outline: none;
+            white-space: nowrap;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .custom-file-input:hover::before {
+            border-color: #0056b3;
+        }
+
+        .custom-file-input:active::before {
+            background: #0b62e1;
+        }
+
+        /* เสริมสไตล์สำหรับแสดงชื่อไฟล์ที่เลือก */
+        .custom-file-label::after {
+            content: 'Choose file';
+            /* เพิ่มข้อความที่แสดงหลังจากชื่อไฟล์ */
+        }
+
+        .custom-file-input {
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            z-index: 2;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -132,7 +185,8 @@ if (!isset($_SESSION['user_id'])) {
                                     <div class="row">
                                         <div class="tab-content">
                                             <div id="InstEng" class="active tab-pane" style="padding-top: 1%">
-                                                <div id="box">
+
+                                                <!-- <div id="box">
                                                     <form enctype="multipart/form-data" onsubmit="return Validate(this);" method="post" name="myform" action="import_csv.php">
                                                         <table border="0px" width="500px" height="150px">
                                                             <tr>
@@ -149,7 +203,38 @@ if (!isset($_SESSION['user_id'])) {
                                                             </tr>
                                                         </table>
                                                     </form>
+                                                </div> -->
+                                                <div id="box">
+                                                    <form enctype="multipart/form-data" onsubmit="return Validate(this);" method="post" name="myform" action="import_csv.php">
+                                                        <table class="table">
+                                                            <thead class="thead-dark">
+                                                                <tr>
+                                                                    <th colspan="2" class="text-center">
+                                                                        <h4>IMPORT CSV FILE</h4>
+                                                                    </th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td class="align-middle text-right">CSV File:</td>
+                                                                    <td>
+                                                                        <div class="custom-file">
+                                                                            <input type="file" class="custom-file-input" id="file" name="file" accept=".csv">
+                                                                            <label class="custom-file-label" for="file">Choose file</label>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td colspan="2" class="text-center">
+                                                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </form>
                                                 </div>
+
+
                                             </div>
                                         </div>
                                     </div>
@@ -166,6 +251,14 @@ if (!isset($_SESSION['user_id'])) {
     <script src="./Content/plugins/bootstrap/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js"></script>
     <script src="./Content/dist/js/adminlte.min.js"></script>
+    <script>
+        document.getElementById('file').addEventListener('change', function() {
+            var fullPath = this.value;
+            var fileName = fullPath.replace(/^.*[\\\/]/, '');
+            var label = document.querySelector('.custom-file-label');
+            label.innerHTML = fileName;
+        });
+    </script>
 </body>
 
 </html>
