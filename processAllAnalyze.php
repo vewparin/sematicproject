@@ -59,5 +59,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Handle query error
             }
         }
+        // Redirect to sentiment.php after processing
+        header("Location: sentiment.php");
+        exit();
     }
 }
