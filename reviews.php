@@ -182,16 +182,18 @@ if (!isset($_SESSION['user_id'])) {
                                     <div class="row">
                                         <div class="tab-content">
                                             <div class="text-center">
-                                                <tr>
-                                                    <td colspan="5" style="display: flex; gap: 10px;">
-                                                        <button id="allAnalyzeBtn" class="btn btn-primary btn-sm" style="margin-bottom: 5px;">All Analyze With AI ForThai</button>
-                                                        <form action="predict.php" method="post" style="margin-right: 10px;">
-                                                            <button type="submit" class="btn btn-success btn-sm" style="margin-bottom: 5px;">Analyze All Comments With TrainModel</button>
-                                                        </form>
-                                                        <!-- <a href="analyzebytrain.php" class="btn btn-success" style="margin-bottom: 5px;">View Analyzed Comments</a> -->
-                                                    </td>
-                                                </tr>
-                                                <button class="btn btn-danger btn-sm delete-all-btn" style="margin-bottom: 15px;"><i class="fa fa-trash"></i> Delete All</button>
+                                                <div id="buttonContainer" class="text-center handle-hidden">
+                                                    <tr class="handle-hidden">
+                                                        <td colspan="5" style="display: flex; gap: 10px;">
+                                                            <button id="allAnalyzeBtn" class="btn btn-primary btn-sm" style="margin-bottom: 5px;">All Analyze With AI ForThai</button>
+                                                            <form action="predict.php" method="post" style="margin-right: 10px;">
+                                                                <button type="submit" class="btn btn-success btn-sm" style="margin-bottom: 5px;">Analyze All Comments With TrainModel</button>
+                                                            </form>
+                                                            <!-- <a href="analyzebytrain.php" class="btn btn-success" style="margin-bottom: 5px;">View Analyzed Comments</a> -->
+                                                        </td>
+                                                    </tr>
+                                                    <button class="btn btn-danger btn-sm delete-all-btn" style="margin-bottom: 15px;"><i class="fa fa-trash"></i> Delete All</button>
+                                                </div>
                                             </div>
                                             <div id="InstEng" class="active tab-pane" style="padding-top: 1%">
                                                 <?php
@@ -200,7 +202,7 @@ if (!isset($_SESSION['user_id'])) {
                                                 $result = pg_query($query);
                                                 ?>
                                                 <div class="table-responsive">
-                                                    <table class="table table-hover table-condensed">
+                                                    <table id="reviewTable" class="table table-hover table-condensed">
                                                         <tr>
                                                             <th>ID</th>
                                                             <th>Comment</th>
@@ -259,6 +261,29 @@ if (!isset($_SESSION['user_id'])) {
     <script src="./Content/dist/js/adminlte.min.js"></script>
     <!-- <script src="./allAnalyze.js"></script> -->
     <script>
+        //โค๊ดนี้ทำหน้าที่ซ่อนปุ่มเมื่อไม่มีข้อมูลใน table
+        $(document).ready(function() {
+            function toggleButtonVisibility() {
+                var rowCount = $('#reviewTable tbody tr').length;
+                if (rowCount > 1) { // มากกว่า 1 เพราะแถวแรกเป็น header
+                    $('#buttonContainer').show();
+                } else {
+                    $('#buttonContainer').hide();
+                }
+            }
+
+            // เรียกใช้ฟังก์ชันเมื่อโหลดหน้า
+            toggleButtonVisibility();
+
+            // เรียกใช้ฟังก์ชันหลังจากการลบแถว
+            $(document).on('click', '.deletebtn', function() {
+                // รอให้การลบเสร็จสิ้นก่อนที่จะตรวจสอบจำนวนแถว
+                setTimeout(toggleButtonVisibility, 100);
+            });
+        });
+
+
+
         // JavaScript function to handle delete button click
         $(document).ready(function() {
             $('.delete-btn').click(function() {
