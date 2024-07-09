@@ -23,6 +23,8 @@ if (!isset($_SESSION['user_id'])) {
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <link href="./Content/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
     <style>
         .btn-circle {
             border-radius: 50%;
@@ -34,8 +36,6 @@ if (!isset($_SESSION['user_id'])) {
             color: white;
             /* เปลี่ยนสีตัวอักษรเป็นสีขาวเมื่อเมาส์โฮเวอร์ */
         }
-
-        .btn-danger {}
 
         .logout-button {
             margin: 10px;
@@ -51,10 +51,42 @@ if (!isset($_SESSION['user_id'])) {
         .logout-button:hover {
             background-color: #515151;
         }
+
+        .btn-circle {
+            border-radius: 50%;
+        }
+
+        .btn-hover:hover {
+            background-color: red;
+            color: white;
+        }
+
+        .logout-button {
+            margin: 10px;
+            background-color: #CD5C5C;
+            border-radius: 40px;
+            color: white;
+            font-size: 14px;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .logout-button:hover {
+            background-color: #515151;
+        }
+
+        /* ปรับขนาดตัวอักษรในตารางให้เล็กลง */
+        .table td,
+        .table th {
+            font-size: 12px;
+        }
     </style>
 </head>
 
 <body class="hold-transition sidebar-mini">
+
+
     <div class="wrapper">
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-fixed-top bg-white navbar-light border-bottom elevation-1">
@@ -197,6 +229,7 @@ if (!isset($_SESSION['user_id'])) {
                                                             <!-- <a href="analyzebytrain.php" class="btn btn-success" style="margin-bottom: 5px;">View Analyzed Comments</a> -->
                                                         </td>
                                                     </tr>
+
 
                                                 </div>
                                             </div>

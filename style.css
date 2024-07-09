@@ -1,0 +1,73 @@
+.logout-button {
+    margin: 10px;
+    background-color: #CD5C5C;
+    border-radius: 40px;
+    color: white;
+    font-size: 14px;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.logout-button:hover {
+    background-color: #515151;
+}
+
+.table-responsive-xl {
+    overflow-x: auto;
+}
+
+.table th,
+.table td {
+    white-space: normal;
+    word-wrap: break-word;
+    min-width: 100px;
+    font-size: 12px; /* ปรับขนาดตัวอักษรที่นี่ */
+}
+
+.table th:nth-child(1),
+.table td:nth-child(1) {
+    width: 5%;
+}
+
+/* ID */
+.table th:nth-child(2),
+.table td:nth-child(2) {
+    width: 10%;
+}
+
+/* Review Id */
+.table th:nth-child(3),
+.table td:nth-child(3) {
+    width: 15%;
+}
+
+/* Sentiment */
+.table th:nth-child(4),
+.table td:nth-child(4) {
+    width: 10%;
+}
+
+/* Label */
+.table th:nth-child(5),
+.table td:nth-child(5) {
+    width: 30%;
+}
+
+/* Keywords */
+.table th:nth-child(6),
+.table td:nth-child(6) {
+    width: 6%;
+    max-width: 100px; /* กำหนดขนาดความกว้างสูงสุด */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    white-space: nowrap; /* ทำให้ข้อความไม่ตัดบรรทัด */
+}
+
+/* Analyzed Date */
+.table th:nth-child(7),
+.table td:nth-child(7) {
+    width: 10%;
+}
+

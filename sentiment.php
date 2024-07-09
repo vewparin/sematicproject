@@ -21,20 +21,13 @@ if (!isset($_SESSION['user_id'])) {
     <link rel="stylesheet" href="./Content/dist/css/adminlte.min.css">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <link href="./Content/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
+    <link rel="stylesheet" href="./style.css">
     <style>
-             .logout-button {
-            margin: 10px;
-            background-color: #CD5C5C;
-            border-radius: 40px;
-            color: white;
-            font-size: 14px;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
-        .logout-button:hover{
-            background-color: #515151;
+        .table .keywords-column {
+            max-width: 500px;
+            /* ปรับความกว้างตามต้องการ */
+            word-wrap: break-word;
+            white-space: normal;
         }
     </style>
 </head>
@@ -131,6 +124,7 @@ if (!isset($_SESSION['user_id'])) {
                                                 $query = 'SELECT * FROM sentiments';
                                                 $result = pg_query($query);
                                                 ?>
+
                                                 <div class="table-responsive">
                                                     <table class="table table-hover table-condensed">
                                                         <tr>
@@ -138,15 +132,30 @@ if (!isset($_SESSION['user_id'])) {
                                                             <th>Review Id</th>
                                                             <th>Sentiment</th>
                                                             <th>Label</th>
-                                                            <th>Keywords</th>
+                                                            <th class="keywords-column">Keywords</th>
                                                             <th>Analyzed Date</th>
                                                             <th>Actions</th> <!-- เพิ่มส่วนนี้ -->
                                                         </tr>
                                                         <?php
+                                                        // while ($row = pg_fetch_assoc($result)) {
+                                                        //     echo '<tr>';
+                                                        //     foreach ($row as $cell) {
+                                                        //         echo '<td>' . $cell . '</td>';
+                                                        //     }
+                                                        //     echo '<td><button class="btn btn-danger btn-sm delete-btn" data-id="' . $row['id'] . '"><i class="fa fa-trash"></i> Delete</button></td>';
+                                                        //     echo '</tr>';
+                                                        // }
+                                                        // pg_free_result($result);
                                                         while ($row = pg_fetch_assoc($result)) {
                                                             echo '<tr>';
+                                                            $i = 0;
                                                             foreach ($row as $cell) {
-                                                                echo '<td>' . $cell . '</td>';
+                                                                if ($i == 4) { // คอลัมน์ที่ 5 คือ Keywords (นับจาก 0)
+                                                                    echo '<td class="keywords-column">' . $cell . '</td>';
+                                                                } else {
+                                                                    echo '<td>' . $cell . '</td>';
+                                                                }
+                                                                $i++;
                                                             }
                                                             echo '<td><button class="btn btn-danger btn-sm delete-btn" data-id="' . $row['id'] . '"><i class="fa fa-trash"></i> Delete</button></td>';
                                                             echo '</tr>';
@@ -155,6 +164,7 @@ if (!isset($_SESSION['user_id'])) {
                                                         ?>
                                                     </table>
                                                 </div>
+
                                                 <div class="text-center">
                                                     <button class="btn btn-danger btn-sm delete-all-btn"><i class="fa fa-trash"></i> Delete All</button>
                                                 </div>
