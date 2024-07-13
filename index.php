@@ -204,9 +204,11 @@ if (!isset($_SESSION['user_id'])) {
                                                         </table>
                                                     </form>
                                                 </div> -->
+
                                                 <div id="box">
                                                     <form enctype="multipart/form-data" onsubmit="return Validate(this);" method="post" name="myform" action="import_csv.php">
                                                         <table class="table">
+
                                                             <thead class="thead-dark">
                                                                 <tr>
                                                                     <th colspan="2" class="text-center">
@@ -231,6 +233,8 @@ if (!isset($_SESSION['user_id'])) {
                                                                 </tr>
                                                             </tbody>
                                                         </table>
+                                                        <h6 style="font-weight: bold; color:#CD5C5C">รองรับไฟล์ได้สูงสุด 500 rows</h6>
+
                                                     </form>
                                                 </div>
 

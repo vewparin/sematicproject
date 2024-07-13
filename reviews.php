@@ -473,7 +473,7 @@ if (!isset($_SESSION['user_id'])) {
         //===================================================================================
         $(document).ready(function() {
             function calculateEstimatedTime(reviewCount) {
-                const averageTimePerReview = 0.5 / 60; // สมมติว่าใช้เวลา 0.5 วินาทีต่อรีวิว
+                const averageTimePerReview = 0.24 / 60; // 
                 const estimatedTime = reviewCount * averageTimePerReview;
                 return estimatedTime.toFixed(2); // แสดงทศนิยมสองตำแหน่ง
             }
@@ -524,7 +524,7 @@ if (!isset($_SESSION['user_id'])) {
                                 var processingTime = jsonResponse.processing_time;
 
                                 // Alert the processing time
-                                alert('Processing complete. Time taken: ' + processingTime + ' seconds.');
+                                alert('Processing complete. Time taken: ' + processingTime + ' minute.');
 
                                 // Redirect to sentiment.php after processing
                                 window.location.href = 'sentiment.php';

@@ -151,6 +151,7 @@ if (!isset($_SESSION['user_id'])) {
                                                         //     echo '</tr>';
                                                         // }
                                                         // pg_free_result($result);
+                                                        
                                                         while ($row = pg_fetch_assoc($result)) {
                                                             echo '<tr>';
                                                             $i = 0;
