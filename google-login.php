@@ -70,6 +70,7 @@
 //     $authUrl = $client->createAuthUrl();
 //     header('Location: ' . filter_var($authUrl, FILTER_SANITIZE_URL));
 // }
+
 session_start();
 require_once './vendor/autoload.php';
 require_once 'database.php'; // เรียกใช้ไฟล์ database.php
