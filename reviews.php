@@ -176,6 +176,13 @@ if (!isset($_SESSION['user_id'])) {
                                 <ul class="nav nav-pills">
                                     <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#InstEng"><small style="font-size: medium; font-weight: 600">Review To Analyze Sentiment</small></a></li>
                                 </ul>
+                                <?php
+                                include 'database.php';
+                                $query = 'SELECT * FROM reviews1';
+                                $result = pg_query($query);
+                                $rowCount = pg_num_rows($result);
+                                ?>
+                                <div style="padding-top:20px">Number of reviews: <?php echo $rowCount; ?></div> <!-- แสดงจำนวน rows -->
                             </div>
                             <div class="card-body">
                                 <div class="col-md-12">
@@ -242,6 +249,9 @@ if (!isset($_SESSION['user_id'])) {
                                                 <div id="estimatedTimeContainer" style="margin-top: 20px;">
                                                     Estimated processing time: <span id="estimatedTime"></span> minutes
                                                 </div>
+                                                <div id="countdownContainer" style="margin-top: 20px; display: none;">
+                                                    Remaining time: <span id="countdownTimer"></span> minutes
+                                                </div>
                                             </div>
 
 
@@ -285,30 +295,31 @@ if (!isset($_SESSION['user_id'])) {
 
 
 
-        // JavaScript function to handle delete button click
-        $(document).ready(function() {
-            $('.delete-btn').click(function() {
-                var button = $(this);
-                if (confirm('คุณแน่ใจหรือไม่ที่ต้องการลบรายการนี้?')) {
-                    var sentimentId = button.data('id'); // Get the ID of the sentiment to delete
-                    $.ajax({
-                        url: 'delete_sentiment.php',
-                        type: 'POST',
-                        data: {
-                            id: sentimentId
-                        },
-                        success: function(response) {
-                            alert(response); // Display success or error message
-                            // Remove the deleted row from the table
-                            button.closest('tr').remove();
-                        },
-                        error: function(xhr, status, error) {
-                            alert('เกิดข้อผิดพลาดในการลบรายการ');
-                        }
-                    });
-                }
-            });
-        });
+        // // JavaScript function to handle delete button click
+        // $(document).ready(function() {
+        //     $('.delete-btn').click(function() {
+        //         var button = $(this);
+        //         if (confirm('คุณแน่ใจหรือไม่ที่ต้องการลบรายการนี้?')) {
+        //             var sentimentId = button.data('id'); // Get the ID of the sentiment to delete
+        //             $.ajax({
+        //                 url: 'delete_sentiment.php',
+        //                 type: 'POST',
+        //                 data: {
+        //                     id: sentimentId
+        //                 },
+        //                 success: function(response) {
+        //                     alert(response); // Display success or error message
+        //                     // Remove the deleted row from the table
+        //                     button.closest('tr').remove();
+        //                 },
+        //                 error: function(xhr, status, error) {
+        //                     alert('เกิดข้อผิดพลาดในการลบรายการ');
+        //                 }
+        //             });
+        //         }
+        //     });
+        // });
+
         // JavaScript function to handle delete all button click
         $(document).ready(function() {
             $('.delete-all-btn').click(function() {
@@ -357,6 +368,25 @@ if (!isset($_SESSION['user_id'])) {
             // เรียกใช้ฟังก์ชัน updateEstimatedTime เมื่อโหลดหน้าเว็บ
             updateEstimatedTime();
 
+            function startCountdown(minutes) {
+                var countdownContainer = $('#countdownContainer');
+                var countdownTimer = $('#countdownTimer');
+                countdownContainer.show();
+
+                var timeLeft = minutes * 60; // Convert minutes to seconds
+                var countdownInterval = setInterval(function() {
+                    var minutesLeft = Math.floor(timeLeft / 60);
+                    var secondsLeft = timeLeft % 60;
+                    countdownTimer.text(minutesLeft + ':' + (secondsLeft < 10 ? '0' : '') + secondsLeft);
+                    timeLeft--;
+
+                    if (timeLeft < 0) {
+                        clearInterval(countdownInterval);
+                        countdownContainer.hide();
+                    }
+                }, 1000);
+            }
+
             $('#allAnalyzeBtn').click(function() {
                 var confirmMessage = 'Are you sure you want to analyze all reviews with AI ForThai?\n\nPress OK to proceed, or Cancel to abort.';
                 if (confirm(confirmMessage)) {
@@ -378,6 +408,8 @@ if (!isset($_SESSION['user_id'])) {
                             beforeSend: function() {
                                 // Show a loading indicator or message here
                                 alert('Please wait while processing...');
+                                var estimatedTime = parseFloat($('#estimatedTime').text());
+                                startCountdown(estimatedTime);
                             },
                             success: function(response) {
                                 // Parse the JSON response

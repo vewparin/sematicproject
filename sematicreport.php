@@ -1,79 +1,27 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
-    // ถ้าผู้ใช้ยังไม่ได้ล็อกอินด้วย Google ให้ Redirect ไปยัง google-login.php เพื่อล็อกอิน
     header('Location: google-login.php');
     exit();
 }
 
-// Include database connection
-include 'database.php';
+require 'functions.php';
 
-// Initialize an array to store sentiment counts
-$sentimentCounts = [
-    'positive' => 0,
-    'neutral' => 0,
-    'negative' => 0
-];
-
-// Query to fetch sentiment data
-$query = 'SELECT label FROM sentiments';
-$result = pg_query($query);
-
-// Count the number of each sentiment label
-$totalCount = 0;
-while ($row = pg_fetch_assoc($result)) {
-    switch (strtolower($row['label'])) {
-        case 'positive':
-            $sentimentCounts['positive']++;
-            break;
-        case 'neutral':
-            $sentimentCounts['neutral']++;
-            break;
-        case 'negative':
-            $sentimentCounts['negative']++;
-            break;
-        default:
-            // Handle other cases if necessary
-            break;
-    }
-    $totalCount++;
-}
-pg_free_result($result);
-
-// Calculate percentages
-$data = [
-    'positive' => $totalCount ? round(($sentimentCounts['positive'] / $totalCount) * 100, 2) : 0,
-    'neutral' => $totalCount ? round(($sentimentCounts['neutral'] / $totalCount) * 100, 2) : 0,
-    'negative' => $totalCount ? round(($sentimentCounts['negative'] / $totalCount) * 100, 2) : 0,
-];
-
-// Additional information
 $teacher = "ดร.สมชาย อาจารย์ดี";
 $subject = "การวิเคราะห์ข้อมูล";
 $semester = "ภาคการศึกษาที่ 1/2566";
 
-// Function to fetch comments based on sentiment
-function fetchCommentsBySentiment($sentiment)
-{
-    include 'database.php'; // Ensure you have database connection included
-    $query = "SELECT comment FROM reviews1 
-              JOIN sentiments ON reviews1.id = sentiments.review_id 
-              WHERE sentiments.label = '$sentiment'";
-    $result = pg_query($query);
+$sentimentData = getSentimentCounts();
+$sentimentCounts = $sentimentData['counts'];
+$data = $sentimentData['data'];
 
-    $comments = [];
-    while ($row = pg_fetch_assoc($result)) {
-        $comments[] = $row['comment'];
-    }
-    pg_free_result($result);
-    return $comments;
-}
-
-// Fetch comments for each sentiment
 $positiveComments = fetchCommentsBySentiment('positive');
 $neutralComments = fetchCommentsBySentiment('neutral');
 $negativeComments = fetchCommentsBySentiment('negative');
+
+if (isset($_GET['action']) && $_GET['action'] === 'download') {
+    downloadExcelReport($sentimentCounts, $data);
+}
 ?>
 
 <!DOCTYPE html>
@@ -111,6 +59,7 @@ $negativeComments = fetchCommentsBySentiment('negative');
             width: 60%;
             margin: auto;
         }
+
         .logout-button {
             margin: 10px;
             background-color: #CD5C5C;
@@ -121,7 +70,8 @@ $negativeComments = fetchCommentsBySentiment('negative');
             padding: 5px 10px;
             cursor: pointer;
         }
-        .logout-button:hover{
+
+        .logout-button:hover {
             background-color: #515151;
         }
     </style>
@@ -152,7 +102,7 @@ $negativeComments = fetchCommentsBySentiment('negative');
                                         <i class="fa fa-user-o nav-icon" style="font-size:24px; color:white;"></i>
                                         <?php
                                         if (isset($_SESSION['user_id'])) {
-                                            echo '<span class="user-info">' . $_SESSION['user_name'];
+                                            echo '<span class="user-info">' . htmlspecialchars($_SESSION['user_name'], ENT_QUOTES, 'UTF-8');
                                             echo '<a href="logout.php"><button class="logout-button">Logout</button></a></span>';
                                         } else {
                                             echo '<p>User</p>';
@@ -186,7 +136,7 @@ $negativeComments = fetchCommentsBySentiment('negative');
                         </li>
                         <li class="nav-item">
                             <a href="analyzebytrain.php" class="nav-link "><i class="fa fa-file-text nav-icon" style="font-size:24px"></i>
-                                <p> sentimentByTrain</p>
+                                <p>sentimentByTrain</p>
                             </a>
                         </li>
                     </ul>
@@ -211,9 +161,6 @@ $negativeComments = fetchCommentsBySentiment('negative');
                                 <div class="card-body">
                                     <div class="text-center">
                                         <h3 class="mb-4">รายงานการวิเคราะห์ความรู้สึก</h3>
-                                        <!-- <p><strong>อาจารย์ผู้สอน:</strong> <?php echo $teacher; ?></p>
-                                        <p><strong>วิชา:</strong> <?php echo $subject; ?></p>
-                                        <p><strong>ภาคปีการศึกษา:</strong> <?php echo $semester; ?></p> -->
                                         <div class="row">
                                             <div class="col-md-4">
                                                 <h5>บวก (Positive): <?php echo $sentimentCounts['positive']; ?> ครั้ง</h5>
@@ -297,6 +244,11 @@ $negativeComments = fetchCommentsBySentiment('negative');
                                             </div>
                                         </div>
 
+                                        <!-- Button for downloading report -->
+                                        <div class="mt-4">
+                                            <a href="?action=download" class="btn btn-primary">ดาวน์โหลดรายงานเป็น Excel</a>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -329,12 +281,10 @@ $negativeComments = fetchCommentsBySentiment('negative');
             }
         });
 
-        // JavaScript function to show comments in the modal
         function showComments(sentiment) {
             var comments = [];
             var modalTitle = '';
 
-            // Fetch the comments based on sentiment
             switch (sentiment) {
                 case 'positive':
                     comments = <?php echo json_encode($positiveComments); ?>;
@@ -350,14 +300,11 @@ $negativeComments = fetchCommentsBySentiment('negative');
                     break;
             }
 
-            // Set the modal title
             document.getElementById('commentsModalLabel').textContent = modalTitle;
 
-            // Clear previous comments
             var commentsList = document.getElementById('commentsList');
             commentsList.innerHTML = '';
 
-            // Append new comments
             comments.forEach(function(comment) {
                 var li = document.createElement('li');
                 li.textContent = comment;
@@ -365,7 +312,6 @@ $negativeComments = fetchCommentsBySentiment('negative');
                 commentsList.appendChild(li);
             });
 
-            // Show the modal
             $('#commentsModal').modal('show');
         }
     </script>

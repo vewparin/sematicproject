@@ -128,7 +128,9 @@ if (!isset($_SESSION['user_id'])) {
                                                 include 'database.php';
                                                 $query = 'SELECT * FROM sentiments';
                                                 $result = pg_query($query);
+                                                $rowCount = pg_num_rows($result);
                                                 ?>
+                                                <div style="padding:10px">Number of Sentiment: <?php echo $rowCount; ?></div> <!-- แสดงจำนวน rows -->
 
                                                 <div class="table-responsive">
                                                     <table class="table table-hover table-condensed">
@@ -151,7 +153,7 @@ if (!isset($_SESSION['user_id'])) {
                                                         //     echo '</tr>';
                                                         // }
                                                         // pg_free_result($result);
-                                                        
+
                                                         while ($row = pg_fetch_assoc($result)) {
                                                             echo '<tr>';
                                                             $i = 0;
@@ -191,15 +193,41 @@ if (!isset($_SESSION['user_id'])) {
     <script src="./Content/dist/js/adminlte.min.js"></script>
     <script>
         // JavaScript function to handle delete button click
+        // $(document).ready(function() {
+        //     $('.delete-btn').click(function() {
+        //         var button = $(this);
+        //         if (confirm('คุณแน่ใจหรือไม่ที่ต้องการลบรายการนี้?')) {
+        //             var sentimentId = button.data('id'); // Get the ID of the sentiment to delete
+        //             $.ajax({
+        //                 url: 'delete_sentiment.php',
+        //                 type: 'POST',
+        //                 data: {
+        //                     id: sentimentId
+        //                 },
+        //                 success: function(response) {
+        //                     alert(response); // Display success or error message
+        //                     // Remove the deleted row from the table
+        //                     button.closest('tr').remove();
+        //                 },
+        //                 error: function(xhr, status, error) {
+        //                     alert('เกิดข้อผิดพลาดในการลบรายการ');
+        //                 }
+        //             });
+        //         }
+        //     });
+        // });
+        // JavaScript function to handle delete button click
+
         $(document).ready(function() {
             $('.delete-btn').click(function() {
                 var button = $(this);
                 if (confirm('คุณแน่ใจหรือไม่ที่ต้องการลบรายการนี้?')) {
                     var sentimentId = button.data('id'); // Get the ID of the sentiment to delete
                     $.ajax({
-                        url: 'delete_sentiment.php',
+                        url: 'functions.php',
                         type: 'POST',
                         data: {
+                            action: 'delete_sentiment',
                             id: sentimentId
                         },
                         success: function(response) {
@@ -214,6 +242,7 @@ if (!isset($_SESSION['user_id'])) {
                 }
             });
         });
+
         // JavaScript function to handle delete all button click
         $(document).ready(function() {
             $('.delete-all-btn').click(function() {

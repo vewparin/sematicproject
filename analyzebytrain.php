@@ -26,7 +26,8 @@ if (!isset($_SESSION['user_id'])) {
             padding: 5px 10px;
             cursor: pointer;
         }
-        .logout-button:hover{
+
+        .logout-button:hover {
             background-color: #515151;
         }
     </style>
@@ -74,7 +75,7 @@ if (!isset($_SESSION['user_id'])) {
                                 </li>
                             </div>
                         </div>
-                        
+
                         <li class="nav-item">
                             <a href="index.php" class="nav-link "><i class="fa fa-home nav-icon"></i>
                                 <p>Home</p>
@@ -181,45 +182,22 @@ if (!isset($_SESSION['user_id'])) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js"></script>
     <script src="./Content/dist/js/adminlte.min.js"></script>
     <script>
-        // JavaScript function to handle delete button click
-        $(document).ready(function() {
-            $('.delete-btn').click(function() {
-                var button = $(this);
-                if (confirm('คุณแน่ใจหรือไม่ที่ต้องการลบรายการนี้?')) {
-                    var sentimentId = button.data('id'); // Get the ID of the sentiment to delete
-                    $.ajax({
-                        url: 'delete_sentiment.php',
-                        type: 'POST',
-                        data: {
-                            id: sentimentId
-                        },
-                        success: function(response) {
-                            alert(response); // Display success or error message
-                            // Remove the deleted row from the table
-                            button.closest('tr').remove();
-                        },
-                        error: function(xhr, status, error) {
-                            alert('เกิดข้อผิดพลาดในการลบรายการ');
-                        }
-                    });
-                }
-            });
-        });
         // JavaScript function to handle delete all button click
         $(document).ready(function() {
             $('.delete-all-btn').click(function() {
                 if (confirm('คุณแน่ใจหรือไม่ที่ต้องการลบข้อมูลทั้งหมด?')) {
                     $.ajax({
-                        url: 'delete_all_by_train_sentiment.php',
+                        url: 'functions.php',
                         type: 'POST',
+                        data: {
+                            action: 'delete_all'
+                        },
                         success: function(response) {
-                            // Handle success response here
-                            alert('ลบข้อมูลทั้งหมดสำเร็จ');
+                            alert(response); // Display success or error message
                             // Remove all rows from the table
                             $('table tbody tr').not(':first').remove();
                         },
                         error: function(xhr, status, error) {
-                            // Handle error response here
                             alert('เกิดข้อผิดพลาดในการลบข้อมูล');
                         }
                     });
