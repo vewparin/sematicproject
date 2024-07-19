@@ -127,7 +127,7 @@ if (isset($_GET['code'])) {
             }
         }
 
-        header('Location: index.php');
+        header('Location: src\php\index.php');
         exit();
     } else {
         die('Database connection failed.');

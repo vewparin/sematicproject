@@ -39,7 +39,7 @@
             <p class="lead mb-4">ระบบวิเคราะห์ความคิดเห็นของเราช่วยให้คุณสามารถตรวจสอบและวิเคราะห์ความคิดเห็นของลูกค้าหรือผู้ใช้งานได้อย่างรวดเร็วและแม่นยำ โดยใช้เทคโนโลยีปัญญาประดิษฐ์ที่ทันสมัย เราสามารถประมวลผลข้อความจากหลายแหล่งข้อมูล ไม่ว่าจะเป็นโซเชียลมีเดีย รีวิวสินค้า หรือแบบสอบถาม เพื่อให้คุณได้รับข้อมูลเชิงลึกที่เป็นประโยชน์ในการปรับปรุงและพัฒนาธุรกิจของคุณ</p>
             <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
                 <a href="google-login.php" class="btn login-btn">Login with Google</a>
-                <button type="button" class="btn btn-outline-secondary btn-lg px-4">Secondary</button>
+                <!-- <button type="button" class="btn btn-outline-secondary btn-lg px-4">Secondary</button> -->
             </div>
         </div>
     </div>

@@ -233,7 +233,7 @@ if (!isset($_SESSION['user_id'])) {
                                                                 </tr>
                                                             </tbody>
                                                         </table>
-                                                        <h6 style="font-weight: bold; color:#CD5C5C">รองรับไฟล์ได้สูงสุด 500 rows</h6>
+                                                        <h6 style="font-weight: bold; color:#CD5C5C">รองรับไฟล์ได้สูงสุด 500 แถว</h6>
 
                                                     </form>
                                                 </div>

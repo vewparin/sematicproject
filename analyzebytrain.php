@@ -6,8 +6,6 @@ if (!isset($_SESSION['user_id'])) {
     header('Location: google-login.php');
     exit();
 }
-
-
 ?>
 
 <!DOCTYPE html>
@@ -29,6 +27,18 @@ if (!isset($_SESSION['user_id'])) {
 
         .logout-button:hover {
             background-color: #515151;
+        }
+
+        .table-container {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .table-container thead {
+            position: sticky;
+            top: 0;
+            background-color: #fff;
+            z-index: 1;
         }
     </style>
     <link rel="import" href="files.html">
@@ -127,42 +137,44 @@ if (!isset($_SESSION['user_id'])) {
                                     <div class="row">
                                         <div class="tab-content">
                                             <div id="InstEng" class="active tab-pane" style="padding-top: 1%">
-                                                <table class="table table-bordered">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>ID</th>
-                                                            <th>Review ID</th>
-                                                            <th>Label</th>
-                                                            <th>Created On</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <?php
-                                                        include 'database.php';
-                                                        // Ensure $dbconn is defined from database.php
-                                                        if ($dbconn) {
-                                                            $query = "SELECT * FROM public.analyzed_comments ORDER BY created_on DESC";
-                                                            $comments_result = pg_query($dbconn, $query);
+                                                <div class="table-container">
+                                                    <table class="table table-bordered">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>ID</th>
+                                                                <th>Review ID</th>
+                                                                <th>Label</th>
+                                                                <th>Created On</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <?php
+                                                            include 'database.php';
+                                                            // Ensure $dbconn is defined from database.php
+                                                            if ($dbconn) {
+                                                                $query = "SELECT * FROM public.analyzed_comments ORDER BY created_on DESC";
+                                                                $comments_result = pg_query($dbconn, $query);
 
-                                                            if ($comments_result) {
-                                                                while ($row = pg_fetch_assoc($comments_result)) {
-                                                                    echo "<tr>";
-                                                                    echo "<td>" . htmlspecialchars($row['id']) . "</td>";
-                                                                    echo "<td>" . htmlspecialchars($row['review_id']) . "</td>";
-                                                                    echo "<td>" . htmlspecialchars($row['label']) . "</td>";
-                                                                    echo "<td>" . htmlspecialchars($row['created_on']) . "</td>";
-                                                                    echo "</tr>";
+                                                                if ($comments_result) {
+                                                                    while ($row = pg_fetch_assoc($comments_result)) {
+                                                                        echo "<tr>";
+                                                                        echo "<td>" . htmlspecialchars($row['id']) . "</td>";
+                                                                        echo "<td>" . htmlspecialchars($row['review_id']) . "</td>";
+                                                                        echo "<td>" . htmlspecialchars($row['label']) . "</td>";
+                                                                        echo "<td>" . htmlspecialchars($row['created_on']) . "</td>";
+                                                                        echo "</tr>";
+                                                                    }
+                                                                    pg_free_result($comments_result);
+                                                                } else {
+                                                                    echo "Query failed: " . pg_last_error($dbconn);
                                                                 }
-                                                                pg_free_result($comments_result);
                                                             } else {
-                                                                echo "Query failed: " . pg_last_error($dbconn);
+                                                                echo "Database connection failed.";
                                                             }
-                                                        } else {
-                                                            echo "Database connection failed.";
-                                                        }
-                                                        ?>
-                                                    </tbody>
-                                                </table>
+                                                            ?>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                                 <div class="text-center">
                                                     <button class="btn btn-danger btn-sm delete-all-btn"><i class="fa fa-trash"></i> Delete All</button>
                                                 </div>

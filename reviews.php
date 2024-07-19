@@ -208,6 +208,12 @@ if (!isset($_SESSION['user_id'])) {
                                                 $query = 'SELECT * FROM reviews1';
                                                 $result = pg_query($query);
                                                 ?>
+                                                <div id="estimatedTimeContainer" style="margin-top: 20px; padding-bottom: 15px">
+                                                    <h6 style="font-size:small;">คาดว่าจะใช้เวลาในการวิเคราะห์โดยประมาณ: <span id="estimatedTime"></span> minutes</h6>
+                                                </div>
+                                                <div id="countdownContainer" style="margin-top: 20px; display: none; padding:15px; font-size:small">
+                                                    Remaining time: <span id="countdownTimer"></span> minutes
+                                                </div>
                                                 <div class="table-responsive">
                                                     <table id="reviewTable" class="table table-hover table-condensed">
                                                         <tr>
@@ -245,13 +251,13 @@ if (!isset($_SESSION['user_id'])) {
 
                                                     </table>
                                                 </div>
-
+                                                <!-- 
                                                 <div id="estimatedTimeContainer" style="margin-top: 20px;">
                                                     Estimated processing time: <span id="estimatedTime"></span> minutes
                                                 </div>
                                                 <div id="countdownContainer" style="margin-top: 20px; display: none;">
                                                     Remaining time: <span id="countdownTimer"></span> minutes
-                                                </div>
+                                                </div> -->
                                             </div>
 
 
