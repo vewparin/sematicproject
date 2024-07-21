@@ -37,6 +37,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'download') {
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <link href="./Content/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        .comments-container {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
         .percentage-curve {
             width: 100%;
             height: 20px;
@@ -73,6 +78,14 @@ if (isset($_GET['action']) && $_GET['action'] === 'download') {
 
         .logout-button:hover {
             background-color: #515151;
+        }
+        .chart-col{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .bar-size{
+            height: 100%;
         }
     </style>
 </head>
@@ -175,13 +188,25 @@ if (isset($_GET['action']) && $_GET['action'] === 'download') {
                                                 <button class="btn btn-danger" onclick="showComments('negative')">ดูคอมเมนต์</button>
                                             </div>
                                         </div>
-                                        <div class="row mt-4">
-                                            <div class="col-md-12">
-                                                <div class="chart-container">
-                                                    <canvas id="sentimentChart"></canvas>
+
+                                        <div class="chart-col">
+                                            <div class="row mt-4">
+                                                <div class="col-md-12">
+                                                    <div class="chart-container">
+                                                        <canvas id="sentimentChart"></canvas>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row mt-4">
+                                                <div class="col-md-12">
+                                                    <div class="chart-container bar-size">
+                                                        <canvas id="sentimentBarChart"></canvas>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+
+
                                         <div class="row mt-4">
                                             <div class="col-md-12">
                                                 <table class="table table-bordered">
@@ -236,9 +261,12 @@ if (isset($_GET['action']) && $_GET['action'] === 'download') {
                                                         </button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <ul id="commentsList" class="list-group">
-                                                            <!-- Comments will be appended here -->
-                                                        </ul>
+                                                        <p style="color:#CD5C5C">จำนวนคอมเมนต์ทั้งหมด: <span id="commentsCount"></span></p>
+                                                        <div class="comments-container">
+                                                            <ul id="commentsList" class="list-group">
+                                                                <!-- Comments will be appended here -->
+                                                            </ul>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -261,8 +289,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'download') {
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        var ctx = document.getElementById('sentimentChart').getContext('2d');
-        var sentimentChart = new Chart(ctx, {
+        var ctxDoughnut = document.getElementById('sentimentChart').getContext('2d');
+        var sentimentChart = new Chart(ctxDoughnut, {
             type: 'doughnut',
             data: {
                 labels: ['บวก (Positive)', 'กลาง (Neutral)', 'ลบ (Negative)'],
@@ -277,6 +305,33 @@ if (isset($_GET['action']) && $_GET['action'] === 'download') {
                 title: {
                     display: true,
                     text: 'การวิเคราะห์ความรู้สึก'
+                }
+            }
+        });
+
+        var ctxBar = document.getElementById('sentimentBarChart').getContext('2d');
+        var sentimentBarChart = new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: ['บวก (Positive)', 'กลาง (Neutral)', 'ลบ (Negative)'],
+                datasets: [{
+                    data: [<?php echo $data['positive']; ?>, <?php echo $data['neutral']; ?>, <?php echo $data['negative']; ?>],
+                    backgroundColor: ['#4CAF50', '#FFC107', '#F44336']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                title: {
+                    display: true,
+                    text: 'การวิเคราะห์ความรู้สึก'
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
                 }
             }
         });
@@ -301,6 +356,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'download') {
             }
 
             document.getElementById('commentsModalLabel').textContent = modalTitle;
+            document.getElementById('commentsCount').textContent = comments.length;
 
             var commentsList = document.getElementById('commentsList');
             commentsList.innerHTML = '';
