@@ -46,6 +46,45 @@ function getSentimentCounts()
     return ['counts' => $sentimentCounts, 'data' => $data];
 }
 
+function saveReportToDatabase($userId, $sentimentCounts, $data, $fileName)
+{
+    include 'database.php';
+
+    $query = "INSERT INTO sentiment_reports (user_id, positive_count, neutral_count, negative_count, positive_percentage, neutral_percentage, negative_percentage, file_name) 
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8)";
+    $result = pg_query_params($dbconn, $query, array(
+        $userId,
+        $sentimentCounts['positive'],
+        $sentimentCounts['neutral'],
+        $sentimentCounts['negative'],
+        $data['positive'],
+        $data['neutral'],
+        $data['negative'],
+        $fileName
+    ));
+
+    if (!$result) {
+        die('Insert failed: ' . pg_last_error());
+    }
+}
+
+// Fetch the sentiment counts and data
+$sentimentData = getSentimentCounts();
+$sentimentCounts = $sentimentData['counts'];
+$data = $sentimentData['data'];
+
+$fileName = isset($_SESSION['uploaded_file_name']) ? $_SESSION['uploaded_file_name'] : '';
+
+
+// Save the report to the database
+session_start();
+if (isset($_SESSION['user_id'])) {
+    saveReportToDatabase($_SESSION['user_id'], $sentimentCounts, $data, $fileName);
+} else {
+    die('User is not logged in.');
+}
+
+
 function fetchCommentsBySentiment($sentiment)
 {
     include 'database.php';
@@ -170,4 +209,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 //==================================================================================
-
