@@ -22,6 +22,48 @@ $negativeComments = fetchCommentsBySentiment('negative');
 if (isset($_GET['action']) && $_GET['action'] === 'download') {
     downloadExcelReport($sentimentCounts, $data);
 }
+
+// include 'functions.php'; // นำเข้าไฟล์ functions.php
+
+function saveReportToDatabase($userId, $sentimentCounts, $data, $fileName)
+{
+    include 'database.php';
+    $query = "INSERT INTO sentiment_reports (user_id, positive_count, neutral_count, negative_count, positive_percentage, neutral_percentage, negative_percentage, file_name) 
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8)";
+    $result = pg_query_params($dbconn, $query, array(
+        $userId,
+        $sentimentCounts['positive'],
+        $sentimentCounts['neutral'],
+        $sentimentCounts['negative'],
+        $data['positive'],
+        $data['neutral'],
+        $data['negative'],
+        $fileName
+    ));
+
+    if (!$result) {
+        die('Insert failed: ' . pg_last_error());
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['view_semantic_report'])) {
+    // Fetch the sentiment counts and data
+    $sentimentData = getSentimentCounts();
+    $sentimentCounts = $sentimentData['counts'];
+    $data = $sentimentData['data'];
+
+    $fileName = isset($_SESSION['uploaded_file_name']) ? $_SESSION['uploaded_file_name'] : '';
+
+    // Save the report to the database
+    if (isset($_SESSION['user_id'])) {
+        saveReportToDatabase($_SESSION['user_id'], $sentimentCounts, $data, $fileName);
+    } else {
+        die('User is not logged in.');
+    }
+    // Redirect to sematicreport.php
+    header('Location: sematicreport.php');
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -79,12 +121,14 @@ if (isset($_GET['action']) && $_GET['action'] === 'download') {
         .logout-button:hover {
             background-color: #515151;
         }
-        .chart-col{
+
+        .chart-col {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
-        .bar-size{
+
+        .bar-size {
             height: 100%;
         }
     </style>
@@ -276,7 +320,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'download') {
                                         <div class="mt-4">
                                             <a href="?action=download" class="btn btn-primary">ดาวน์โหลดรายงานเป็น Excel</a>
                                         </div>
-
+                                        <form method="POST">
+                                            <button type="submit" name="view_semantic_report" style="background-color:cadetblue; margin-top:20px">
+                                                <a style="color:#fff">Save to Database</a>
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -370,6 +418,44 @@ if (isset($_GET['action']) && $_GET['action'] === 'download') {
 
             $('#commentsModal').modal('show');
         }
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#view-sematic-report').click(function(event) {
+                event.preventDefault(); // Prevent default button action
+
+                var userId = <?php echo $_SESSION['user_id']; ?>;
+                var positiveCount = 10; // Replace with actual positive count
+                var neutralCount = 5; // Replace with actual neutral count
+                var negativeCount = 3; // Replace with actual negative count
+                var positivePercentage = 50; // Replace with actual positive percentage
+                var neutralPercentage = 30; // Replace with actual neutral percentage
+                var negativePercentage = 20; // Replace with actual negative percentage
+                var fileName = 'your-file-name.txt'; // Replace with actual file name
+
+                $.ajax({
+                    url: 'save_report.php',
+                    type: 'POST',
+                    data: {
+                        user_id: userId,
+                        positive_count: positiveCount,
+                        neutral_count: neutralCount,
+                        negative_count: negativeCount,
+                        positive_percentage: positivePercentage,
+                        neutral_percentage: neutralPercentage,
+                        negative_percentage: negativePercentage,
+                        file_name: fileName
+                    },
+                    success: function(response) {
+                        alert('Data saved successfully.');
+                        window.location.href = 'sematicreport.php'; // Redirect to semantic report page
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Error saving data.');
+                    }
+                });
+            });
+        });
     </script>
     <script src="./Content/plugins/jquery/jquery.min.js"></script>
     <script src="./Content/plugins/bootstrap/js/bootstrap.min.js"></script>

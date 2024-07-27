@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
@@ -6,7 +7,6 @@ if (!isset($_SESSION['user_id'])) {
     header('Location: google-login.php');
     exit();
 }
-
 
 ?>
 
@@ -176,6 +176,11 @@ if (!isset($_SESSION['user_id'])) {
                                                 <div class="text-center">
                                                     <button class="btn btn-danger btn-sm delete-all-btn"><i class="fa fa-trash"></i> Delete All</button>
                                                 </div>
+                                                <div class="text-center" style="padding: 15px;">
+                                                    <button style="background-color:cadetblue;">
+                                                        <a href="./sematicreport.php" style="color:#fff">View Semantic Report</a>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -192,72 +197,51 @@ if (!isset($_SESSION['user_id'])) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js"></script>
     <script src="./Content/dist/js/adminlte.min.js"></script>
     <script>
-        // JavaScript function to handle delete button click
-        // $(document).ready(function() {
-        //     $('.delete-btn').click(function() {
-        //         var button = $(this);
-        //         if (confirm('คุณแน่ใจหรือไม่ที่ต้องการลบรายการนี้?')) {
-        //             var sentimentId = button.data('id'); // Get the ID of the sentiment to delete
-        //             $.ajax({
-        //                 url: 'delete_sentiment.php',
-        //                 type: 'POST',
-        //                 data: {
-        //                     id: sentimentId
-        //                 },
-        //                 success: function(response) {
-        //                     alert(response); // Display success or error message
-        //                     // Remove the deleted row from the table
-        //                     button.closest('tr').remove();
-        //                 },
-        //                 error: function(xhr, status, error) {
-        //                     alert('เกิดข้อผิดพลาดในการลบรายการ');
-        //                 }
-        //             });
-        //         }
-        //     });
-        // });
-        // JavaScript function to handle delete button click
-
         $(document).ready(function() {
+            // ลบแถวเดียว
             $('.delete-btn').click(function() {
-                var button = $(this);
-                if (confirm('คุณแน่ใจหรือไม่ที่ต้องการลบรายการนี้?')) {
-                    var sentimentId = button.data('id'); // Get the ID of the sentiment to delete
+                var id = $(this).data('id');
+                var row = $(this).closest('tr');
+
+                if (confirm('Are you sure you want to delete this sentiment?')) {
                     $.ajax({
-                        url: 'functions.php',
+                        url: 'delete_sentiment.php',
                         type: 'POST',
                         data: {
-                            action: 'delete_sentiment',
-                            id: sentimentId
+                            id: id
                         },
                         success: function(response) {
-                            alert(response); // Display success or error message
-                            // Remove the deleted row from the table
-                            button.closest('tr').remove();
+                            var result = JSON.parse(response);
+                            if (result.status == 'success') {
+                                row.remove();
+                            } else {
+                                alert('Delete failed: ' + result.message);
+                            }
                         },
-                        error: function(xhr, status, error) {
-                            alert('เกิดข้อผิดพลาดในการลบรายการ');
+                        error: function() {
+                            alert('An error occurred while deleting the sentiment.');
                         }
                     });
                 }
             });
-        });
 
-        // JavaScript function to handle delete all button click
-        $(document).ready(function() {
+            // ลบทั้งหมด
             $('.delete-all-btn').click(function() {
                 if (confirm('คุณแน่ใจหรือไม่ที่ต้องการลบข้อมูลทั้งหมด?')) {
                     $.ajax({
                         url: 'delete_all_sentiments.php',
                         type: 'POST',
                         success: function(response) {
-                            // Handle success response here
-                            alert('ลบข้อมูลทั้งหมดสำเร็จ');
-                            // Remove all rows from the table
-                            $('table tbody tr').not(':first').remove();
+                            var result = JSON.parse(response);
+                            if (result.status == 'success') {
+                                alert('ลบข้อมูลทั้งหมดสำเร็จ');
+                                // Remove all rows from the table
+                                $('table tbody tr').remove();
+                            } else {
+                                alert('Delete all failed: ' + result.message);
+                            }
                         },
                         error: function(xhr, status, error) {
-                            // Handle error response here
                             alert('เกิดข้อผิดพลาดในการลบข้อมูล');
                         }
                     });

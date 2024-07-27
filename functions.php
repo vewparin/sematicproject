@@ -46,44 +46,6 @@ function getSentimentCounts()
     return ['counts' => $sentimentCounts, 'data' => $data];
 }
 
-function saveReportToDatabase($userId, $sentimentCounts, $data, $fileName)
-{
-    include 'database.php';
-
-    $query = "INSERT INTO sentiment_reports (user_id, positive_count, neutral_count, negative_count, positive_percentage, neutral_percentage, negative_percentage, file_name) 
-              VALUES ($1, $2, $3, $4, $5, $6, $7, $8)";
-    $result = pg_query_params($dbconn, $query, array(
-        $userId,
-        $sentimentCounts['positive'],
-        $sentimentCounts['neutral'],
-        $sentimentCounts['negative'],
-        $data['positive'],
-        $data['neutral'],
-        $data['negative'],
-        $fileName
-    ));
-
-    if (!$result) {
-        die('Insert failed: ' . pg_last_error());
-    }
-}
-
-// Fetch the sentiment counts and data
-$sentimentData = getSentimentCounts();
-$sentimentCounts = $sentimentData['counts'];
-$data = $sentimentData['data'];
-
-$fileName = isset($_SESSION['uploaded_file_name']) ? $_SESSION['uploaded_file_name'] : '';
-
-
-// Save the report to the database
-session_start();
-if (isset($_SESSION['user_id'])) {
-    saveReportToDatabase($_SESSION['user_id'], $sentimentCounts, $data, $fileName);
-} else {
-    die('User is not logged in.');
-}
-
 
 function fetchCommentsBySentiment($sentiment)
 {
@@ -165,47 +127,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     echo $response;
     exit();
 }
-
-//หน้า sentiment.php
-function deleteSentiment($sentiment_id)
-{
-    // Sanitize the sentiment ID
-    $sentiment_id = filter_var($sentiment_id, FILTER_SANITIZE_NUMBER_INT);
-
-    // Prepare a DELETE statement
-    $query = "DELETE FROM sentiments WHERE id = $sentiment_id";
-
-    // Execute the DELETE statement
-    if (pg_query($query)) {
-        return 'ลบรายการเรียบร้อยแล้ว';
-    } else {
-        return 'เกิดข้อผิดพลาดในการลบรายการ';
-    }
-}
-
-// Check if this file is accessed via an AJAX request to call the delete functions
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    session_start();
-
-    if (!isset($_SESSION['user_id'])) {
-        echo 'ผู้ใช้ไม่ได้ล็อกอิน';
-        exit();
-    }
-
-    if (isset($_POST['action'])) {
-        if ($_POST['action'] === 'delete_all') {
-            $response = deleteAllAnalyzedComments();
-            echo $response;
-        } elseif ($_POST['action'] === 'delete_sentiment' && isset($_POST['id'])) {
-            $response = deleteSentiment($_POST['id']);
-            echo $response;
-        } else {
-            echo 'ไม่พบการกระทำที่ต้องการ';
-        }
-    } else {
-        echo 'ไม่พบการกระทำที่ต้องการ';
-    }
-    exit();
-}
-
 //==================================================================================
